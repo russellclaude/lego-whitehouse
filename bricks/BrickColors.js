@@ -11,4 +11,7 @@ export const C = {
   TAN:          0xE4CD9E,
   TRANS_CLEAR:  0x88BBDD, // window glass — rendered transparent
   GOLD:         0xC8A84B,
+  FLAG_RED:     0xBF0A30,
+  FLAG_BLUE:    0x002868,
+  FLAG_WHITE:   0xFFFFFF,
 };

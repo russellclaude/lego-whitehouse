@@ -313,6 +313,57 @@ function buildWing(world, x0, z0, W, D, H, T, facingEast) {
   }
 }
 
+// ── American flag ─────────────────────────────────────────
+// 9 studs wide × 6 layers tall, extending east from the pole.
+// Stripes alternate red/white (bottom to top).
+// Blue canton covers the top 3 rows × left 3 studs (upper-left quarter).
+function americanFlag(world) {
+  const POLE_X = 0, POLE_Z = -20;
+  const FLAG_X  = POLE_X + 1; // flag starts one stud east of pole
+  const FLAG_Z  = POLE_Z;
+  const FLAG_W  = 9;           // studs wide (x)
+  const FLAG_H  = 6;           // layers tall
+  const FLAG_Y0 = 7;           // bottom layer of flag (pole top is y=12)
+  const CANTON_W = 3;          // blue canton width in studs
+  const CANTON_H = 3;          // blue canton height in layers (top rows)
+
+  // Stripe colors bottom → top (6 stripes: W R W R W R)
+  const stripes = [
+    C.FLAG_WHITE,
+    C.FLAG_RED,
+    C.FLAG_WHITE,
+    C.FLAG_RED,
+    C.FLAG_WHITE,
+    C.FLAG_RED,
+  ];
+
+  for (let i = 0; i < FLAG_H; i++) {
+    const y        = FLAG_Y0 + i;
+    const inCanton = i >= (FLAG_H - CANTON_H); // top CANTON_H rows
+
+    if (inCanton) {
+      // Left portion: blue canton
+      world.add(FLAG_X,            FLAG_Z, y, CANTON_W,          1, 1, C.FLAG_BLUE);
+      // Right portion: stripe color
+      world.add(FLAG_X + CANTON_W, FLAG_Z, y, FLAG_W - CANTON_W, 1, 1, stripes[i]);
+    } else {
+      // Full-width stripe
+      world.add(FLAG_X, FLAG_Z, y, FLAG_W, 1, 1, stripes[i]);
+    }
+  }
+
+  // Stars: 3×2 grid of white 1×1 studs inside the canton
+  // (one stud per star position — very Lego)
+  for (let row = 0; row < 2; row++) {
+    for (let col = 0; col < 2; col++) {
+      const sx = FLAG_X + col;
+      const sy = FLAG_Y0 + (FLAG_H - CANTON_H) + row;
+      // Place a white tile on top of the blue — shift slightly in z so it's visible
+      world.add(sx, FLAG_Z - 1, sy, 1, 1, 1, C.FLAG_WHITE);
+    }
+  }
+}
+
 // ── Landscaping ───────────────────────────────────────────
 function landscaping(world) {
   const hedgeR = 6;
@@ -325,8 +376,13 @@ function landscaping(world) {
   for (let x = -20; x <= 20; x += 2) {
     fill(world, x, 18, 0, 1, 1, 2, C.DARK_GREEN);
   }
+
+  // Flagpole
   fill(world, 0, -20, 0, 1, 1, 12, C.LIGHT_GRAY);
   world.add(0, -20, 12, 1, 1, 1, C.GOLD);
+
+  // American flag
+  americanFlag(world);
 }
 
 // ── Public entry ──────────────────────────────────────────
